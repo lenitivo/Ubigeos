@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Addresses</title>
+	<meta charset="utf-8" />
+
+    <script type="text/javascript">
+    var reader; 
+           
+    function verifyBrowser() {
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            reader = new FileReader();
+            return true;
+        } else {
+            alert('Your browser does not support this.');
+            return false;
+        }
+    }
+
+    /**
+     * Reading file
+     */
+    function readFile(filePath) {
+        var output = "";
+        var partAddress = "";
+        var arr = new Array();
+        if(filePath.files && filePath.files[0]) {
+            reader.onload = function (e) {
+                output = e.target.result;
+                arr = splitAdress(output, '"');
+                alert(arr.length);
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i] != '')
+                        setAddress(arr[i]);
+                    else
+                        setAddress('-');
+                }
+                //writeAddress(output);
+                //writeTable();
+            };
+            reader.readAsText(filePath.files[0]);
+        }
+        
+        else { 
+            return false;
+        }
+        return true;
+    }
+
+    function splitAdress(address, delimit) {
+        var result = null;
+
+        if (address != null) {
+            //var delimitator = '"';
+            if (address.indexOf(delimit) >= 0) {
+                result = address.split(delimit);
+            }
+        }
+        return result;
+    }
+
+    function setAddress(linea) {
+        var arr = new Array();
+        var body = document.getElementsByTagName("body")[0];
+        var departamento;
+        var title = document.createTextNode("Departamento");
+        body.appendChild(title);
+        alert(linea);
+        if (linea != '-')
+            arr = splitAdress(linea, '/');
+        else
+            arr = '-';
+        //alert(arr.length);
+        for (var i = 0; i < arr.length; i++) {
+            writeTable(arr[i]);
+        }
+    }
+
+
+
+    function writeAddress(linea) {
+        var address = document.getElementById('main');
+        address.innerHTML = linea; 
+    }
+
+    function writeTable(linea) {
+        var body = document.getElementsByTagName("body")[0];
+
+        var tabla = document.createElement("table");
+        var tblBody = document.createElement("tbody");
+
+        for (var i = 0; i < 3; i++) {
+            var hilera = document.createElement("tr");
+
+            for (var j = 0; j < 4; j++) {
+                var celda = document.createElement("td");
+                var textoCelda = document.createTextNode(linea);
+                celda.appendChild(textoCelda);
+                hilera.appendChild(celda);
+            }
+
+            tblBody.appendChild(hilera);
+        }
+
+        tabla.appendChild(tblBody);
+        body.appendChild(tabla);
+        tabla.setAttribute("border", "1");
+    }
+
+    </script>
+
+</head>
+<body onload="verifyBrowser();">
+    <div id="container">
+        <input type="hidden" id="hdDepartamento" name="hdDepartamento" />
+
+        <h3>UBIGEOS</h3>
+        <br />
+
+        <input type="file" onchange='readFile(this)' />
+        <br />
+        <hr />
+
+        <h3>Datos:</h3>
+        <div id="main">
+            ...
+        </div>
+    </div>
+</body>
+</html>
